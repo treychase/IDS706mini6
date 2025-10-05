@@ -1,0 +1,52 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, "3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        make install
+    
+    - name: Format code
+      run: |
+        make format
+    
+    - name: Lint with ruff
+      run: |
+        ruff check *.py
+    
+    - name: Lint with pylint
+      run: |
+        pylint --disable=R,C --ignore-patterns=test_.*?py *.py
+    
+    - name: Test with pytest
+      run: |
+        make test
+    
+    - name: Run database operations
+      run: |
+        make run
+    
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
