@@ -3,19 +3,19 @@
 
 -- First, check how many records will be deleted
 SELECT COUNT(*) as records_to_delete
-FROM rankings
+FROM university_rankings
 WHERE year = 2015 AND score < 45;
 
 -- Show the records that will be deleted
 SELECT institution, country, score
-FROM rankings
+FROM university_rankings
 WHERE year = 2015 AND score < 45;
 
 -- Delete the records
-DELETE FROM rankings
+DELETE FROM university_rankings
 WHERE year = 2015 AND score < 45;
 
 -- Verify deletion - should return 0 rows
 SELECT COUNT(*) as remaining_low_scores
-FROM rankings
+FROM university_rankings
 WHERE year = 2015 AND score < 45;

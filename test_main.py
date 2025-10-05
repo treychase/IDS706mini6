@@ -40,13 +40,15 @@ def test_database_connection(test_db):
 
 
 def test_rankings_table_exists(test_db):
-    """Test that rankings table exists"""
+    """Test that university_rankings table exists"""
     conn = sqlite3.connect(test_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='rankings';")
+    cursor.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='university_rankings';"
+    )
     result = cursor.fetchone()
     conn.close()
-    assert result is not None, "Rankings table not found"
+    assert result is not None, "university_rankings table not found"
 
 
 def test_insert_operation(test_db):
@@ -57,14 +59,16 @@ def test_insert_operation(test_db):
     # Insert Duke Tech
     cursor.execute(
         """
-        INSERT INTO rankings (world_rank, institution, country, score, year)
+        INSERT INTO university_rankings (world_rank, institution, country, score, year)
         VALUES (350, 'Duke Tech', 'USA', 60.5, 2014)
     """
     )
     conn.commit()
 
     # Verify insertion
-    cursor.execute("SELECT * FROM rankings WHERE institution='Duke Tech' AND year=2014")
+    cursor.execute(
+        "SELECT * FROM university_rankings WHERE institution='Duke Tech' AND year=2014"
+    )
     result = cursor.fetchone()
     conn.close()
 
@@ -80,7 +84,7 @@ def test_read_operation(test_db):
 
     cursor.execute(
         """
-        SELECT COUNT(*) FROM rankings
+        SELECT COUNT(*) FROM university_rankings
         WHERE country = 'Japan' AND year = 2013 
         AND CAST(world_rank AS INTEGER) <= 200
     """
@@ -99,7 +103,7 @@ def test_update_operation(test_db):
 
     # Get original score
     cursor.execute(
-        "SELECT score FROM rankings WHERE institution LIKE '%Oxford%' AND year = 2014"
+        "SELECT score FROM university_rankings WHERE institution LIKE '%Oxford%' AND year = 2014"
     )
     result = cursor.fetchone()
 
@@ -109,7 +113,7 @@ def test_update_operation(test_db):
         # Update score
         cursor.execute(
             """
-            UPDATE rankings SET score = score + 1.2
+            UPDATE university_rankings SET score = score + 1.2
             WHERE institution LIKE '%Oxford%' AND year = 2014
         """
         )
@@ -117,13 +121,15 @@ def test_update_operation(test_db):
 
         # Get updated score
         cursor.execute(
-            "SELECT score FROM rankings WHERE institution LIKE '%Oxford%' AND year = 2014"
+            "SELECT score FROM university_rankings WHERE institution LIKE '%Oxford%' AND year = 2014"
         )
         new_score = float(cursor.fetchone()[0])
 
         conn.close()
 
-        assert abs(new_score - (original_score + 1.2)) < 0.01, "Score not updated correctly"
+        assert (
+            abs(new_score - (original_score + 1.2)) < 0.01
+        ), "Score not updated correctly"
     else:
         conn.close()
         pytest.skip("Oxford not found in 2014 data")
@@ -135,15 +141,19 @@ def test_delete_operation(test_db):
     cursor = conn.cursor()
 
     # Count records before deletion
-    cursor.execute("SELECT COUNT(*) FROM rankings WHERE year = 2015 AND score < 45")
+    cursor.execute(
+        "SELECT COUNT(*) FROM university_rankings WHERE year = 2015 AND score < 45"
+    )
     count_before = cursor.fetchone()[0]
 
     # Delete records
-    cursor.execute("DELETE FROM rankings WHERE year = 2015 AND score < 45")
+    cursor.execute("DELETE FROM university_rankings WHERE year = 2015 AND score < 45")
     conn.commit()
 
     # Count records after deletion
-    cursor.execute("SELECT COUNT(*) FROM rankings WHERE year = 2015 AND score < 45")
+    cursor.execute(
+        "SELECT COUNT(*) FROM university_rankings WHERE year = 2015 AND score < 45"
+    )
     count_after = cursor.fetchone()[0]
 
     conn.close()
@@ -157,17 +167,17 @@ def test_basic_analysis_queries(test_db):
     cursor = conn.cursor()
 
     # Test total count
-    cursor.execute("SELECT COUNT(*) FROM rankings")
+    cursor.execute("SELECT COUNT(*) FROM university_rankings")
     total = cursor.fetchone()[0]
     assert total > 0, "Database should have records"
 
     # Test grouping by year
-    cursor.execute("SELECT year, COUNT(*) FROM rankings GROUP BY year")
+    cursor.execute("SELECT year, COUNT(*) FROM university_rankings GROUP BY year")
     years = cursor.fetchall()
     assert len(years) > 0, "Should have records for multiple years"
 
     # Test average score calculation
-    cursor.execute("SELECT AVG(score) FROM rankings")
+    cursor.execute("SELECT AVG(score) FROM university_rankings")
     avg_score = cursor.fetchone()[0]
     assert avg_score is not None, "Should calculate average score"
 
@@ -192,6 +202,31 @@ def test_sql_files_exist():
 def test_readme_exists():
     """Test that README.md exists"""
     assert os.path.exists("README.md"), "README.md not found"
+
+
+def test_main_functions():
+    """Test main.py functions"""
+    import main
+
+    # Test connect_to_database function
+    conn, cursor = main.connect_to_database()
+    assert conn is not None, "Connection should not be None"
+    assert cursor is not None, "Cursor should not be None"
+    conn.close()
+
+
+def test_execute_sql_file(test_db):
+    """Test execute_sql_file function"""
+    import main
+
+    conn = sqlite3.connect(test_db)
+    cursor = conn.cursor()
+
+    # Test with connect.sql
+    results = main.execute_sql_file(cursor, "connect.sql")
+    assert isinstance(results, list), "Should return a list"
+
+    conn.close()
 
 
 if __name__ == "__main__":
