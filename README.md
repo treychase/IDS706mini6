@@ -1,6 +1,6 @@
 # IDS706 Mini Assignment 6: Introduction to Databases
 
-[![CI/CD Pipeline](https://github.com/YOUR_USERNAME/IDS706mini6/actions/workflows/cicd.yml/badge.svg)](https://github.com/YOUR_USERNAME/IDS706mini6/actions/workflows/cicd.yml)
+[![CI/CD Pipeline](https://github.com/treychase/IDS706mini6/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/treychase/IDS706mini6/actions/workflows/cicd.yml)
 
 This project demonstrates database operations using SQLite, including connecting to a database, performing basic analysis, and executing CRUD (Create, Read, Update, Delete) operations on a University Rankings dataset.
 
