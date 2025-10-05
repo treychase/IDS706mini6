@@ -6,6 +6,8 @@ import sqlite3
 import os
 import shutil
 import pytest
+import sys
+from io import StringIO
 
 
 @pytest.fixture
@@ -204,29 +206,92 @@ def test_readme_exists():
     assert os.path.exists("README.md"), "README.md not found"
 
 
-def test_main_functions():
-    """Test main.py functions"""
+def test_main_imports():
+    """Test that main.py can be imported without errors"""
+    try:
+        import main
+
+        assert hasattr(
+            main, "run_analysis"
+        ), "main.py should have run_analysis function"
+        assert hasattr(
+            main, "print_section"
+        ), "main.py should have print_section function"
+        assert hasattr(main, "print_table"), "main.py should have print_table function"
+    except ImportError as e:
+        pytest.fail(f"Failed to import main.py: {e}")
+
+
+def test_print_section_function():
+    """Test print_section function from main.py"""
     import main
 
-    # Test connect_to_database function
-    conn, cursor = main.connect_to_database()
-    assert conn is not None, "Connection should not be None"
-    assert cursor is not None, "Cursor should not be None"
-    conn.close()
+    # Capture output
+    captured_output = StringIO()
+    sys.stdout = captured_output
+
+    main.print_section("Test Section")
+
+    # Reset stdout
+    sys.stdout = sys.__stdout__
+
+    output = captured_output.getvalue()
+    assert "Test Section" in output, "Section title should be in output"
+    assert "=" in output, "Section should have separators"
 
 
-def test_execute_sql_file(test_db):
-    """Test execute_sql_file function"""
+def test_run_analysis_function():
+    """Test that run_analysis function executes without errors"""
     import main
 
-    conn = sqlite3.connect(test_db)
-    cursor = conn.cursor()
+    # Capture output to prevent cluttering test output
+    captured_output = StringIO()
+    sys.stdout = captured_output
 
-    # Test with connect.sql
-    results = main.execute_sql_file(cursor, "connect.sql")
-    assert isinstance(results, list), "Should return a list"
+    try:
+        main.run_analysis()
+        success = True
+    except Exception as e:
+        success = False
+        error = str(e)
 
-    conn.close()
+    # Reset stdout
+    sys.stdout = sys.__stdout__
+
+    if not success:
+        pytest.fail(f"run_analysis() failed with error: {error}")
+
+    output = captured_output.getvalue()
+    assert "ANALYSIS" in output.upper(), "Output should contain analysis results"
+    assert "TOTAL RECORDS" in output.upper(), "Output should show total records"
+
+
+def test_analysis_covers_all_sections():
+    """Test that analysis includes all expected sections"""
+    import main
+
+    # Capture output
+    captured_output = StringIO()
+    sys.stdout = captured_output
+
+    main.run_analysis()
+
+    # Reset stdout
+    sys.stdout = sys.__stdout__
+
+    output = captured_output.getvalue().upper()
+
+    expected_sections = [
+        "TOTAL RECORDS",
+        "UNIVERSITIES BY YEAR",
+        "SCORE STATISTICS",
+        "TOP 10 UNIVERSITIES",
+        "TOP 10 COUNTRIES",
+        "SCORE DISTRIBUTION",
+    ]
+
+    for section in expected_sections:
+        assert section in output, f"Analysis should include '{section}' section"
 
 
 if __name__ == "__main__":
