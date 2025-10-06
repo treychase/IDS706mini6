@@ -2,7 +2,24 @@
 
 [![CI/CD Pipeline](https://github.com/treychase/IDS706mini6/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/treychase/IDS706mini6/actions/workflows/cicd.yml)
 
-This project demonstrates database operations using SQLite, including connecting to a database, performing basic analysis, and executing CRUD (Create, Read, Update, Delete) operations on a University Rankings dataset.
+## Project Description
+
+Connect to database - Successfully connect to the SQLite database using either the command-line interface or a database management tool.
+
+Perform Basic Analysis - Write SQL queries to explore the dataset, including basic statistics and summary operations.
+
+CRUD Operations - Perform the CRUD operations below. Execute each operation and document what changed in your README (e.g., which rows/fields were added, updated, or deleted), rather than pasting the raw return/output of the SQL commands.
+
+If you use the pre-built SQLite database, perform the following operations. You’ll be working with the University Rankings dataset, which contains rankings from 2012 to 2015.
+
+The ranking committee has decided to publish new results for a new university in 2014. Insert this university into the database.
+Institution: Duke Tech
+Country: USA
+World Rank: 350
+Score: 60.5
+A policy consultant has reached out to you with the following question. How many universities from Japan show up in the global top 200 in 2013?
+The score for University of Oxford in 2014 was miscalculated. Increase its score by +1.2 points. Update the row to reflect this update.
+After reviewing, the ranking committee decided that universities with a score below 45 in 2015 should not have been included in the published dataset. Clean up the records to reflect this.
 
 ## Project Structure
 
@@ -102,27 +119,118 @@ make lint
 
 ### Key Statistics
 
-1. **Total Records**: The database contains rankings for multiple universities across 4 years (2012-2015)
+**1. Total Records**: 2,200 university rankings across all years
 
-2. **Universities by Year**: Each year has approximately 400-600 universities ranked globally
+**2. Universities by Year**:
+- 2012: 100 universities
+- 2013: 100 universities
+- 2014: 1,000 universities (expanded coverage)
+- 2015: 1,000 universities
 
-3. **Score Distribution**:
-   - Average scores range from 45-50 across all years
-   - Top universities score above 90
-   - Minimum scores typically fall in the 40-45 range
+**3. Score Statistics by Year**:
 
-4. **Top Countries**: 
-   - USA has the highest number of ranked universities
-   - UK, China, Germany, and Japan follow in university count
-   - European and Asian countries have strong representation
+| Year | Average Score | Minimum Score | Maximum Score |
+|------|---------------|---------------|---------------|
+| 2012 | 54.94 | 43.36 | 100.0 |
+| 2013 | 55.27 | 44.26 | 100.0 |
+| 2014 | 47.27 | 44.18 | 100.0 |
+| 2015 | 46.86 | 44.02 | 100.0 |
 
-5. **Score Ranges**:
-   - 90-100: Elite institutions (Harvard, MIT, Stanford, etc.)
-   - 80-89: Top-tier research universities
-   - 70-79: Strong research institutions
-   - Below 70: Emerging and regional universities
+Notable trend: Average scores decreased in 2014-2015 when coverage expanded to 1,000 universities, indicating inclusion of more lower-ranked institutions.
 
-6. **Consistency**: Several universities appear in all 4 years, showing stable academic performance
+**4. Top 10 Universities (2015)**:
+
+| Rank | Institution | Country | Score |
+|------|-------------|---------|-------|
+| 1 | Harvard University | USA | 100.0 |
+| 2 | Stanford University | USA | 98.66 |
+| 3 | Massachusetts Institute of Technology | USA | 97.54 |
+| 4 | University of Cambridge | United Kingdom | 96.81 |
+| 5 | University of Oxford | United Kingdom | 96.46 |
+| 6 | Columbia University | USA | 96.14 |
+| 7 | University of California, Berkeley | USA | 92.25 |
+| 8 | University of Chicago | USA | 90.7 |
+| 9 | Princeton University | USA | 89.42 |
+| 10 | Cornell University | USA | 86.79 |
+
+**5. Top 10 Countries by University Count**:
+
+| Country | University Count |
+|---------|------------------|
+| USA | 573 |
+| China | 167 |
+| Japan | 159 |
+| United Kingdom | 144 |
+| Germany | 115 |
+| France | 109 |
+| Italy | 96 |
+| Spain | 81 |
+| South Korea | 72 |
+| Canada | 72 |
+
+The USA dominates with 26% of all ranked universities, followed by strong Asian and European representation.
+
+**6. Score Distribution**:
+
+| Score Range | Count | Percentage |
+|-------------|-------|------------|
+| 90-100 | 23 | 1.0% |
+| 80-89 | 17 | 0.8% |
+| 70-79 | 22 | 1.0% |
+| 60-69 | 46 | 2.1% |
+| 50-59 | 224 | 10.2% |
+| Below 50 | 1,868 | 84.9% |
+
+The majority (85%) of universities score below 50, highlighting the elite nature of top-tier institutions.
+
+**7. Consistency Analysis**: 
+Universities appearing in all 4 years (2012-2015) include:
+- Arizona State University
+- Boston University
+- Brown University
+- California Institute of Technology
+- Carnegie Mellon University
+- Columbia University
+- Cornell University
+- Dartmouth College
+- Duke University
+- Emory University
+
+These institutions demonstrate consistent academic performance across the ranking period.
+
+**8. USA Universities Deep Dive**:
+
+| Year | USA Universities | Average Score | Max Score |
+|------|------------------|---------------|-----------|
+| 2012 | 58 | 57.57 | 100.0 |
+| 2013 | 57 | 57.77 | 100.0 |
+| 2014 | 229 | 50.64 | 100.0 |
+| 2015 | 229 | 50.11 | 100.0 |
+
+USA universities maintain the highest maximum score (100.0) across all years, with Harvard consistently at the top.
+
+**9. Top Countries by Average Score (2015)**:
+
+| Country | Universities | Average Score | Max Score |
+|---------|--------------|---------------|-----------|
+| Israel | 7 | 51.19 | 65.71 |
+| Switzerland | 9 | 50.40 | 66.93 |
+| USA | 229 | 50.11 | 100.0 |
+| Netherlands | 13 | 48.24 | 51.78 |
+| Denmark | 5 | 48.05 | 52.51 |
+
+Countries with smaller but highly selective university systems (Israel, Switzerland) show strong average scores, though USA has the highest individual performers.
+
+**10. Ranking Tier Analysis (2015)**:
+
+| Rank Category | Count | Average Score |
+|---------------|-------|---------------|
+| Top 100 | 100 | 61.14 |
+| Top 101-200 | 100 | 48.79 |
+| Top 201-300 | 100 | 46.62 |
+| Below 300 | 700 | 44.59 |
+
+Clear stratification exists, with a significant quality gap between top 100 (avg 61.14) and the rest (avg <49).
 
 ## CRUD Operations
 
@@ -132,7 +240,7 @@ make lint
 
 **SQL Query** (`insert.sql`):
 ```sql
-INSERT INTO rankings (world_rank, institution, country, score, year)
+INSERT INTO university_rankings (world_rank, institution, country, score, year)
 VALUES (350, 'Duke Tech', 'USA', 60.5, 2014);
 ```
 
@@ -156,7 +264,7 @@ VALUES (350, 'Duke Tech', 'USA', 60.5, 2014);
 **SQL Query** (`query_japan.sql`):
 ```sql
 SELECT COUNT(*) as japan_universities_top_200
-FROM rankings
+FROM university_rankings
 WHERE country = 'Japan' 
   AND year = 2013 
   AND CAST(world_rank AS INTEGER) <= 200;
@@ -181,7 +289,7 @@ WHERE country = 'Japan'
 
 **SQL Query** (`update_oxford.sql`):
 ```sql
-UPDATE rankings
+UPDATE university_rankings
 SET score = score + 1.2
 WHERE institution LIKE '%Oxford%' AND year = 2014;
 ```
@@ -202,7 +310,7 @@ WHERE institution LIKE '%Oxford%' AND year = 2014;
 
 **SQL Query** (`delete_low_scores.sql`):
 ```sql
-DELETE FROM rankings
+DELETE FROM university_rankings
 WHERE year = 2015 AND score < 45;
 ```
 
@@ -262,6 +370,15 @@ All tests use a copy of the database to avoid modifying the original data during
 3. **Data Integrity**: Understood importance of verifying changes after each operation
 4. **Automation**: Built complete CI/CD pipeline for database operations
 5. **Testing**: Created comprehensive test suite for database operations
+6. **Data Analysis**: Extracted meaningful insights from 2,200+ records across 4 years
+
+## Insights from Analysis
+
+- **Global Reach**: The database covers universities from over 50 countries, with significant representation from USA, China, Japan, and European nations
+- **Quality Concentration**: Only 1.8% of universities score above 80, showing the exclusivity of top-tier institutions
+- **USA Dominance**: American universities comprise 26% of all rankings and hold 8 of the top 10 positions
+- **Expansion Impact**: The 2014 expansion from 100 to 1,000 universities lowered average scores but provided more comprehensive global coverage
+- **Consistent Excellence**: Elite universities maintain perfect or near-perfect scores consistently across all years
 
 ## Future Enhancements
 
@@ -270,16 +387,5 @@ All tests use a copy of the database to avoid modifying the original data during
 - Add database migration scripts
 - Create web interface for database operations
 - Implement database backup and restore functionality
-
-## License
-
-MIT License
-
-## Author
-
-Your Name - Duke University - IDS706
-
-## Acknowledgments
-
-- Dataset provided by IDS706 course materials
-- University Rankings data from global academic assessments
+- Time-series analysis of ranking changes
+- Geographic clusterin
